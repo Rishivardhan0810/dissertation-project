@@ -31,8 +31,7 @@ from typing import Optional
 # Mirrors data/generate_synthetic_data.py's DRUGS table -- kept as a
 # simple lookup here since the live app only needs the NTI flag, not
 # the full drug reference table.
-NTI_DRUGS = {"Warfarin", "Apixaban", "Digoxin", "Levothyroxine", "Insulin Glargine", "Lithium"}
-
+NTI_DRUGS = {"Warfarin", "Apixaban", "Digoxin", "Levothyroxine", "Insulin Glargine", "Phenytoin"}
 
 def is_narrow_therapeutic_index(drug_name: str) -> bool:
     """Checks a drug name against the NTI list above. Case/whitespace
