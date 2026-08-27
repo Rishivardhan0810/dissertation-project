@@ -72,6 +72,9 @@ DRUGS = [
     {"name": "Lithium", "class": "Mood stabiliser", "nti": True,
      "formulations": ["Standard-release", "Prolonged-release"], "doses": [200, 400, 600, 800], "unit": "mg",
      "routes": ["Oral"], "condition": "Bipolar disorder"},
+    {"name": "Phenytoin", "class": "Anticonvulsant", "nti": True,
+     "formulations": ["Standard"], "doses": [30, 50, 100, 200, 300], "unit": "mg",
+     "routes": ["Oral"], "condition": "Epilepsy"},
 
     {"name": "Metformin", "class": "Biguanide (antidiabetic)", "nti": False,
      "formulations": ["Standard-release", "Prolonged-release"], "doses": [500, 850, 1000], "unit": "mg",
