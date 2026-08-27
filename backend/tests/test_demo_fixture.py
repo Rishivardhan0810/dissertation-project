@@ -19,7 +19,6 @@ sys.path.insert(0, DATA_DIR)
 import generate_demo_patient  # noqa: E402
 import load_to_db  # noqa: E402
 
-
 def _write_minimal_main_dataset(tmp_dir):
     """One ordinary patient with a normal previous/current pair -- just
     enough for load_to_db.main() to run against a throwaway directory."""
@@ -51,7 +50,6 @@ def _write_minimal_main_dataset(tmp_dir):
             "concurrent_medications": "", "polypharmacy_count": 0,
         })
 
-
 def test_generate_demo_patient_writes_exactly_one_expected_row(tmp_path):
     generate_demo_patient.main(out_dir=str(tmp_path))
     csv_path = tmp_path / "demo_patient.csv"
@@ -67,7 +65,6 @@ def test_generate_demo_patient_writes_exactly_one_expected_row(tmp_path):
     assert row["date_of_birth"] == "1980-01-01"
     assert row["drug_name"] == "Amlodipine"
     assert row["dose_mg"] == "5"
-
 
 def test_load_to_db_skips_gracefully_when_fixture_absent(tmp_path, monkeypatch, capsys):
     """The normal load logic should be unaffected, with no exception
@@ -87,7 +84,6 @@ def test_load_to_db_skips_gracefully_when_fixture_absent(tmp_path, monkeypatch, 
     n_patients = conn.execute("SELECT COUNT(*) FROM patients").fetchone()[0]
     conn.close()
     assert n_patients == 1  # only the ordinary patient -- no demo patient inserted
-
 
 def test_load_to_db_loads_exactly_one_demo_patient_and_one_prescription_when_present(tmp_path, monkeypatch, capsys):
     _write_minimal_main_dataset(str(tmp_path))
@@ -114,7 +110,6 @@ def test_load_to_db_loads_exactly_one_demo_patient_and_one_prescription_when_pre
     assert len(demo_rx) == 1  # exactly one prescription, not a pair
     assert demo_rx[0]["is_current"] == 1
     assert demo_rx[0]["drug_name"] == "Amlodipine"
-
 
 def test_demo_fixture_never_touches_medications_csv_or_ml_files(tmp_path):
     """Generating the demo fixture should only ever write demo_patient.csv --

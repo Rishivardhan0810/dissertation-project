@@ -19,7 +19,6 @@ TEXT_MODEL_PATH = os.path.join(HERE, "text_model.joblib")
 
 from comparison_engine import Prescription, compare_prescriptions, natural_language_description  # noqa: E402
 
-
 def build_sentence(row):
     prev = Prescription(row["previous_drug"], float(row["previous_dose_mg"]),
                          row["previous_formulation"], "not recorded", row["previous_route"], "", "",
@@ -29,7 +28,6 @@ def build_sentence(row):
                         dose_unit=row["current_dose_unit"])
     report = compare_prescriptions(row["patient_id"], prev, cur)
     return natural_language_description(report, row["condition"], "not recorded")
-
 
 def main():
     if not os.path.exists(REAL_TEST_PATH):
@@ -86,7 +84,6 @@ def main():
         "remains the only evidence for those two classes. manufacturer_changed is always "
         "False here since real Synthea's medications.csv has no manufacturer field at all."
     )
-
 
 if __name__ == "__main__":
     main()

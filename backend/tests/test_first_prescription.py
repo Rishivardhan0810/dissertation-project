@@ -23,7 +23,6 @@ from main import lookup_patient, acknowledge, LookupRequest, AckRequest  # noqa:
 # lookup now requires patient_id AND date_of_birth together.
 TEST_DOB = "2000-01-01"
 
-
 def _build_test_db(path, n_prescriptions):
     """A minimal database with exactly one patient who has `n_prescriptions`
     prescriptions on record."""
@@ -51,14 +50,12 @@ def _build_test_db(path, n_prescriptions):
     conn.close()
     return patient_id
 
-
 @pytest.fixture
 def zero_rx_patient(tmp_path, monkeypatch):
     db_path = tmp_path / "zero_rx.db"
     patient_id = _build_test_db(str(db_path), n_prescriptions=0)
     monkeypatch.setattr(main_module, "DB_PATH", str(db_path))
     return patient_id
-
 
 @pytest.fixture
 def first_rx_patient(tmp_path, monkeypatch):
@@ -67,14 +64,12 @@ def first_rx_patient(tmp_path, monkeypatch):
     monkeypatch.setattr(main_module, "DB_PATH", str(db_path))
     return patient_id
 
-
 @pytest.fixture
 def normal_patient(tmp_path, monkeypatch):
     db_path = tmp_path / "normal_rx.db"
     patient_id = _build_test_db(str(db_path), n_prescriptions=2)
     monkeypatch.setattr(main_module, "DB_PATH", str(db_path))
     return patient_id
-
 
 # ---------------------------------------------------------------------
 # first prescription vs. normal case
@@ -87,14 +82,12 @@ def test_first_prescription_gets_its_own_status_and_no_risk_label(first_rx_patie
     assert len(result["prescriptions"]) == 1  # current prescription still returned
     assert "no previous prescription" in result["status_message"].lower()
 
-
 def test_normal_two_prescription_case_is_status_normal_not_first_prescription(normal_patient):
     """Same result shape, but status must clearly differ from the
     first-prescription case."""
     result = lookup_patient(LookupRequest(patient_id=normal_patient, date_of_birth=TEST_DOB))
     assert result["status"] == "normal"
     assert result["status_message"] is None
-
 
 # A first-prescription review needs to be acknowledgeable and
 # distinguishable from a normal risk acknowledgement, without a schema
@@ -122,7 +115,6 @@ def test_first_prescription_review_is_acknowledgeable_and_distinguishable(first_
     assert row["risk_level"] == "FIRST_PRESCRIPTION_REVIEW"
     assert row["risk_level"] not in ("NONE", "LOW", "MEDIUM", "HIGH")
 
-
 # ---------------------------------------------------------------------
 # zero-prescription patient shouldn't crash
 # ---------------------------------------------------------------------
@@ -133,7 +125,6 @@ def test_zero_prescription_patient_does_not_crash_and_is_labelled(zero_rx_patien
     assert result["prescriptions"] == []
     assert result["alert"] is None
     assert result["status_message"] == "No prescription available for this patient."
-
 
 # There's nothing to dispense for a zero-prescription patient. The
 # frontend never renders a Dispense button in this state (checked by

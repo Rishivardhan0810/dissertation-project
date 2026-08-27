@@ -56,7 +56,6 @@ from evaluate import under_over_risked  # noqa: E402 -- reuses the exact same un
 LABEL = "risk_label"
 CLASS_ORDER = ["NONE", "LOW", "MEDIUM", "HIGH"]
 
-
 def deterministic_rule_predict(df):
     """Re-applies the same rule that generated risk_label, reading it back
     from the feature columns. Should match risk_label 100% of the time --
@@ -85,7 +84,6 @@ def deterministic_rule_predict(df):
         else:
             preds.append("NONE")
     return preds
-
 
 def report_metrics(name, y_true, y_pred, notes=""):
     acc = accuracy_score(y_true, y_pred)
@@ -125,7 +123,6 @@ def report_metrics(name, y_true, y_pred, notes=""):
         "confusion_matrix_labels": CLASS_ORDER,
         "notes": notes,
     }
-
 
 def main():
     print(__doc__)
@@ -257,7 +254,6 @@ def main():
     ]
     pd.DataFrame(csv_rows).to_csv(OUT_CSV, index=False)
     print(f"Saved -> {OUT_CSV}")
-
 
 if __name__ == "__main__":
     main()

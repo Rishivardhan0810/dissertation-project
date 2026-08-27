@@ -27,7 +27,6 @@ from comparison_engine import classify_risk, compare_prescriptions, Prescription
 # lookup now requires patient_id AND date_of_birth together.
 TEST_DOB = "2000-01-01"
 
-
 def _build_two_rx_db(path, previous, current):
     """A patient with exactly two prescriptions (previous + current), so
     lookup_patient() runs the full comparison + risk-scoring path."""
@@ -54,7 +53,6 @@ def _build_two_rx_db(path, previous, current):
     conn.close()
     return patient_id
 
-
 @pytest.fixture
 def high_risk_drug_switch_patient(tmp_path, monkeypatch):
     """A switch onto Warfarin (NTI) -- the rule says HIGH (drug_changed on
@@ -68,7 +66,6 @@ def high_risk_drug_switch_patient(tmp_path, monkeypatch):
     monkeypatch.setattr(main_module, "DB_PATH", str(db_path))
     return patient_id
 
-
 class _FakeModel:
     """Always predicts a fixed value, regardless of input."""
     def __init__(self, fixed_prediction):
@@ -78,13 +75,11 @@ class _FakeModel:
         n = len(X) if hasattr(X, "__len__") else 1
         return [self.fixed_prediction] * n
 
-
 def test_risk_final_equals_rule_risk(high_risk_drug_switch_patient):
     result = lookup_patient(LookupRequest(patient_id=high_risk_drug_switch_patient, date_of_birth=TEST_DOB))
     alert = result["alert"]
     assert alert["risk_final"] == alert["risk_rule"]
     assert alert["risk_final"] == "HIGH"  # Warfarin is NTI -> drug switch -> HIGH by the rule
-
 
 def test_random_forest_cannot_override_the_rule(high_risk_drug_switch_patient, monkeypatch):
     """Even when the (faked) Random Forest actively disagrees, predicting
@@ -96,7 +91,6 @@ def test_random_forest_cannot_override_the_rule(high_risk_drug_switch_patient, m
     assert alert["risk_final"] == "HIGH"            # ...but never used to decide the outcome
     assert alert["risk_final"] != alert["risk_random_forest"]
 
-
 def test_text_model_cannot_override_the_rule(high_risk_drug_switch_patient, monkeypatch):
     monkeypatch.setattr(main_module, "text_model", _FakeModel("NONE"))
     result = lookup_patient(LookupRequest(patient_id=high_risk_drug_switch_patient, date_of_birth=TEST_DOB))
@@ -104,7 +98,6 @@ def test_text_model_cannot_override_the_rule(high_risk_drug_switch_patient, monk
     assert alert["risk_text_model"] == "NONE"
     assert alert["risk_final"] == "HIGH"
     assert alert["risk_final"] != alert["risk_text_model"]
-
 
 def test_both_model_predictions_are_still_returned(high_risk_drug_switch_patient, monkeypatch):
     monkeypatch.setattr(main_module, "rf_model", _FakeModel("MEDIUM"))
@@ -114,7 +107,6 @@ def test_both_model_predictions_are_still_returned(high_risk_drug_switch_patient
     assert alert["risk_random_forest"] == "MEDIUM"
     assert alert["risk_text_model"] == "LOW"
     assert alert["risk_final"] == "HIGH"  # still the rule, despite both models disagreeing
-
 
 def test_existing_acknowledgement_behaviour_intact(high_risk_drug_switch_patient):
     result = acknowledge(AckRequest(
@@ -133,7 +125,6 @@ def test_existing_acknowledgement_behaviour_intact(high_risk_drug_switch_patient
     conn.close()
     assert row["pharmacist_name"] == "Test Pharmacist"
     assert row["risk_level"] == "HIGH"
-
 
 def test_classify_risk_matches_via_compare_prescriptions_integration():
     """classify_risk() should still give the right answer fed values from
@@ -158,7 +149,6 @@ def test_classify_risk_matches_via_compare_prescriptions_integration():
         route_changed=report2.route_changed, narrow_therapeutic_index=report2.narrow_therapeutic_index,
     ) == "LOW"
 
-
 # ---------------------------------------------------------------------
 # branch coverage of classify_risk() itself, called directly with
 # explicit scalars
@@ -170,13 +160,11 @@ def test_classify_risk_none_when_nothing_changed():
         dose_change_pct=0.0, route_changed=False, narrow_therapeutic_index=False,
     ) == "NONE"
 
-
 def test_classify_risk_drug_switch_nti_is_high():
     assert classify_risk(
         drug_changed=True, formulation_changed=False, dose_changed=False,
         dose_change_pct=0.0, route_changed=False, narrow_therapeutic_index=True,
     ) == "HIGH"
-
 
 def test_classify_risk_drug_switch_non_nti_is_medium():
     assert classify_risk(
@@ -184,20 +172,17 @@ def test_classify_risk_drug_switch_non_nti_is_medium():
         dose_change_pct=0.0, route_changed=False, narrow_therapeutic_index=False,
     ) == "MEDIUM"
 
-
 def test_classify_risk_formulation_change_nti_is_high():
     assert classify_risk(
         drug_changed=False, formulation_changed=True, dose_changed=False,
         dose_change_pct=0.0, route_changed=False, narrow_therapeutic_index=True,
     ) == "HIGH"
 
-
 def test_classify_risk_formulation_change_non_nti_is_medium():
     assert classify_risk(
         drug_changed=False, formulation_changed=True, dose_changed=False,
         dose_change_pct=0.0, route_changed=False, narrow_therapeutic_index=False,
     ) == "MEDIUM"
-
 
 def test_classify_risk_dose_change_at_or_above_threshold_is_high():
     # non-NTI threshold is 0.50
@@ -211,7 +196,6 @@ def test_classify_risk_dose_change_at_or_above_threshold_is_high():
         dose_change_pct=0.25, route_changed=False, narrow_therapeutic_index=True,
     ) == "HIGH"
 
-
 def test_classify_risk_dose_change_below_threshold():
     # non-NTI: below 0.50 -> LOW
     assert classify_risk(
@@ -223,7 +207,6 @@ def test_classify_risk_dose_change_below_threshold():
         drug_changed=False, formulation_changed=False, dose_changed=True,
         dose_change_pct=0.24, route_changed=False, narrow_therapeutic_index=True,
     ) == "MEDIUM"
-
 
 def test_classify_risk_route_only_is_low():
     assert classify_risk(

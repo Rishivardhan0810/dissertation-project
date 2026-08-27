@@ -46,7 +46,6 @@ def is_narrow_therapeutic_index(drug_name: str) -> bool:
             return True
     return False
 
-
 @dataclass
 class Prescription:
     drug_name: str
@@ -61,12 +60,10 @@ class Prescription:
     # actually need a different unit (insulin, levothyroxine, etc.) pass it.
     dose_unit: str = "mg"
 
-
 def _dose_text(rx: "Prescription") -> str:
     """Renders a dose with its correct clinical unit, e.g. "5mg" or
     "20 units" -- never assumes mg."""
     return f"{rx.dose_mg}mg" if rx.dose_unit == "mg" else f"{rx.dose_mg} {rx.dose_unit}"
-
 
 @dataclass
 class ChangeReport:
@@ -82,7 +79,6 @@ class ChangeReport:
     previous: Optional[dict] = None
     current: Optional[dict] = None
     magnitude_summary: str = ""
-
 
 def compare_prescriptions(patient_id: str, previous: Prescription, current: Prescription) -> ChangeReport:
     drug_changed = previous.drug_name != current.drug_name
@@ -150,7 +146,6 @@ def compare_prescriptions(patient_id: str, previous: Prescription, current: Pres
         magnitude_summary=magnitude_summary,
     )
 
-
 def classify_risk(*, drug_changed: bool, formulation_changed: bool, dose_changed: bool,
                    dose_change_pct: float, route_changed: bool,
                    narrow_therapeutic_index: bool) -> str:
@@ -178,7 +173,6 @@ def classify_risk(*, drug_changed: bool, formulation_changed: bool, dose_changed
     if route_changed:
         return "LOW"
     return "NONE"
-
 
 def natural_language_description(report: ChangeReport, condition: str, allergy: str,
                                   concurrent_medications: str = "") -> str:

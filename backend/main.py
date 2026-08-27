@@ -23,7 +23,6 @@ from comparison_engine import (
     classify_risk,
 )
 
-
 # ---------------------------------------------------------------------
 # FILE LOCATIONS
 # ---------------------------------------------------------------------
@@ -49,7 +48,6 @@ TEXT_MODEL_PATH = os.path.join(
     "text_model.joblib",
 )
 
-
 # ---------------------------------------------------------------------
 # PRESCRIPTION FIELDS USED BY THE COMPARISON ENGINE
 # ---------------------------------------------------------------------
@@ -72,7 +70,6 @@ RX_FIELDS = (
     "prescriber",
 )
 
-
 # ---------------------------------------------------------------------
 # FASTAPI APPLICATION
 # ---------------------------------------------------------------------
@@ -87,7 +84,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 
 # ---------------------------------------------------------------------
 # LOAD SAVED ML MODELS
@@ -105,7 +101,6 @@ text_model = (
     else None
 )
 
-
 # ---------------------------------------------------------------------
 # DATABASE CONNECTION
 # ---------------------------------------------------------------------
@@ -122,7 +117,6 @@ def get_conn():
 
     return conn
 
-
 # ---------------------------------------------------------------------
 # REQUEST MODELS
 # ---------------------------------------------------------------------
@@ -131,19 +125,16 @@ class LookupRequest(BaseModel):
     patient_id: str
     date_of_birth: str
 
-
 class AckRequest(BaseModel):
     patient_id: str
     pharmacist_name: str
     risk_level: str
-
 
 class DispenseRequest(BaseModel):
     patient_id: str
     pharmacist_name: str
     drug_name: str
     dose_mg: float
-
 
 # ---------------------------------------------------------------------
 # MEDICINE INFORMATION HELPER
@@ -229,7 +220,6 @@ def build_medicine_information(row):
         ),
     }
 
-
 # ---------------------------------------------------------------------
 # PATIENT LOOKUP
 # ---------------------------------------------------------------------
@@ -287,7 +277,6 @@ def lookup_patient(req: LookupRequest):
         for r in rx_rows
     ]
 
-
     # -----------------------------------------------------------------
     # NO PRESCRIPTIONS
     # -----------------------------------------------------------------
@@ -303,7 +292,6 @@ def lookup_patient(req: LookupRequest):
             "status_message":
                 "No prescription available for this patient.",
         }
-
 
     # -----------------------------------------------------------------
     # FIRST PRESCRIPTION
@@ -334,14 +322,12 @@ def lookup_patient(req: LookupRequest):
             ),
         }
 
-
     # -----------------------------------------------------------------
     # PREVIOUS VS CURRENT PRESCRIPTION
     # -----------------------------------------------------------------
 
     previous_row = prescriptions[-2]
     current_row = prescriptions[-1]
-
 
     # Only RX_FIELDS are supplied to Prescription.
     #
@@ -362,7 +348,6 @@ def lookup_patient(req: LookupRequest):
         }
     )
 
-
     # -----------------------------------------------------------------
     # PRESCRIPTION COMPARISON
     # -----------------------------------------------------------------
@@ -372,7 +357,6 @@ def lookup_patient(req: LookupRequest):
         previous,
         current,
     )
-
 
     sentence = natural_language_description(
         report,
@@ -393,13 +377,11 @@ def lookup_patient(req: LookupRequest):
         ),
     )
 
-
     # -----------------------------------------------------------------
     # RISK CLASSIFICATION
     # -----------------------------------------------------------------
 
     alert = None
-
 
     if report.change_types:
 
@@ -442,7 +424,6 @@ def lookup_patient(req: LookupRequest):
             ]
         )
 
-
         # -------------------------------------------------------------
         # RANDOM FOREST
         # -------------------------------------------------------------
@@ -457,7 +438,6 @@ def lookup_patient(req: LookupRequest):
 
             rf_risk = "UNKNOWN"
 
-
         # -------------------------------------------------------------
         # TEXT MODEL
         # -------------------------------------------------------------
@@ -471,7 +451,6 @@ def lookup_patient(req: LookupRequest):
         else:
 
             text_risk = "UNKNOWN"
-
 
         # -------------------------------------------------------------
         # DETERMINISTIC PRIMARY RISK RULE
@@ -498,14 +477,12 @@ def lookup_patient(req: LookupRequest):
                 report.narrow_therapeutic_index,
         )
 
-
         # The deterministic rule controls the live alert.
         #
         # Random Forest and text-model predictions remain secondary
         # comparison signals only.
 
         final_risk = rule_risk
-
 
         # -------------------------------------------------------------
         # ALERT RESPONSE
@@ -552,7 +529,6 @@ def lookup_patient(req: LookupRequest):
                     "",
                 ),
 
-
             # ---------------------------------------------------------
             # BASIC CURRENT-MEDICINE COUNSELLING INFORMATION
             # ---------------------------------------------------------
@@ -575,7 +551,6 @@ def lookup_patient(req: LookupRequest):
                     "",
                 ),
         }
-
 
     # -----------------------------------------------------------------
     # NORMAL LOOKUP RESPONSE
@@ -603,7 +578,6 @@ def lookup_patient(req: LookupRequest):
         "status_message":
             None,
     }
-
 
 # ---------------------------------------------------------------------
 # ACKNOWLEDGEMENT
@@ -647,7 +621,6 @@ def acknowledge(req: AckRequest):
         "status": "acknowledged"
     }
 
-
 # ---------------------------------------------------------------------
 # DISPENSING
 # ---------------------------------------------------------------------
@@ -663,7 +636,6 @@ def dispense(req: DispenseRequest):
 
     conn = get_conn()
 
-
     ack_row = conn.execute(
         """
         SELECT ack_id
@@ -677,13 +649,11 @@ def dispense(req: DispenseRequest):
         ),
     ).fetchone()
 
-
     ack_id = (
         ack_row["ack_id"]
         if ack_row
         else None
     )
-
 
     conn.execute(
         """
@@ -714,15 +684,12 @@ def dispense(req: DispenseRequest):
         ),
     )
 
-
     conn.commit()
     conn.close()
-
 
     return {
         "status": "dispensed"
     }
-
 
 # ---------------------------------------------------------------------
 # AUDIT SUMMARY
@@ -736,7 +703,6 @@ def audit_summary():
 
     conn = get_conn()
 
-
     total_dispenses = conn.execute(
         """
         SELECT COUNT(*)
@@ -744,14 +710,12 @@ def audit_summary():
         """
     ).fetchone()[0]
 
-
     total_acknowledgements = conn.execute(
         """
         SELECT COUNT(*)
         FROM acknowledgements
         """
     ).fetchone()[0]
-
 
     first_prescription_reviews = conn.execute(
         """
@@ -761,14 +725,12 @@ def audit_summary():
         """
     ).fetchone()[0]
 
-
     acknowledged_risk_counts = {
         "NONE": 0,
         "LOW": 0,
         "MEDIUM": 0,
         "HIGH": 0,
     }
-
 
     rows = conn.execute(
         """
@@ -786,16 +748,13 @@ def audit_summary():
         """
     ).fetchall()
 
-
     conn.close()
-
 
     for row in rows:
 
         acknowledged_risk_counts[
             row["risk_level"]
         ] = row["n"]
-
 
     return {
 
@@ -811,7 +770,6 @@ def audit_summary():
         "acknowledged_risk_counts":
             acknowledged_risk_counts,
     }
-
 
 # ---------------------------------------------------------------------
 # AUDIT ACTIVITY
@@ -833,15 +791,12 @@ def audit_activity(limit: int = 50):
             detail="limit must be a positive integer",
         )
 
-
     limit = min(
         limit,
         500,
     )
 
-
     conn = get_conn()
-
 
     rows = conn.execute(
         """
@@ -878,9 +833,7 @@ def audit_activity(limit: int = 50):
         ),
     ).fetchall()
 
-
     conn.close()
-
 
     return {
 
@@ -889,7 +842,6 @@ def audit_activity(limit: int = 50):
             for r in rows
         ]
     }
-
 
 # ---------------------------------------------------------------------
 # HEALTH CHECK

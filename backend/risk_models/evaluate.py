@@ -16,7 +16,6 @@ import pandas as pd
 
 LABEL = "risk_label"
 
-
 def under_over_risked(y_test, y_pred):
     order = {"NONE": 0, "LOW": 1, "MEDIUM": 2, "HIGH": 3}
     under, over = 0, 0
@@ -26,7 +25,6 @@ def under_over_risked(y_test, y_pred):
         elif order[p] > order[t]:
             over += 1
     return under, over
-
 
 def main():
     if not os.path.exists(rf_module.TRAIN_PATH):
@@ -89,7 +87,6 @@ def main():
         "alone. It scores 94%, not 100%, with most errors on the HIGH/MEDIUM boundary -- "
         "exactly where NTI status matters. See README.md and evaluate_real_synthea.py for more."
     )
-
 
 if __name__ == "__main__":
     main()

@@ -22,7 +22,6 @@ FEATURES = ["drug_changed", "formulation_changed", "dose_changed",
             "dose_change_pct", "route_changed", "narrow_therapeutic_index"]
 LABEL = "risk_label"
 
-
 def to_xy(df):
     X = pd.DataFrame({
         "drug_changed": df["drug_changed"].astype(int),
@@ -34,7 +33,6 @@ def to_xy(df):
     })
     y = df[LABEL]
     return X, y
-
 
 def main():
     train_df = pd.read_csv(TRAIN_PATH)
@@ -73,7 +71,6 @@ def main():
 
     return {"accuracy": acc, "precision": precision, "recall": recall, "f1": f1,
             "test_size": len(y_test)}
-
 
 if __name__ == "__main__":
     main()

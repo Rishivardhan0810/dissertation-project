@@ -3,7 +3,6 @@
 same way, instead of repeating the same formatting in every script."""
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 
-
 def print_classification_summary(y_train, y_test, y_pred, acc, precision, recall, f1):
     """Train/test size, headline metrics, per-class report, confusion matrix."""
     labels_sorted = sorted(y_train.unique())
@@ -16,7 +15,6 @@ def print_classification_summary(y_train, y_test, y_pred, acc, precision, recall
     print(classification_report(y_test, y_pred, labels=labels_sorted, zero_division=0))
     print("Confusion matrix (rows=true, cols=pred), labels:", labels_sorted)
     print(confusion_matrix(y_test, y_pred, labels=labels_sorted))
-
 
 def print_real_data_report(name, y_true, y_pred):
     """Same idea, for the external real-Synthea validation -- only the classes

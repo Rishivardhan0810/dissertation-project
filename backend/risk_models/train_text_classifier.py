@@ -25,7 +25,6 @@ LABEL = "risk_label"
 
 from comparison_engine import Prescription, compare_prescriptions, natural_language_description  # noqa: E402
 
-
 def build_sentences(df: pd.DataFrame):
     sentences = []
     for _, row in df.iterrows():
@@ -39,7 +38,6 @@ def build_sentences(df: pd.DataFrame):
         concurrent = row.get("concurrent_medications", "") or ""
         sentences.append(natural_language_description(report, row["condition"], row["allergy"], concurrent))
     return sentences
-
 
 def main():
     train_df = pd.read_csv(TRAIN_PATH)
@@ -79,7 +77,6 @@ def main():
 
     return {"accuracy": acc, "precision": precision, "recall": recall, "f1": f1,
             "test_size": len(y_test)}
-
 
 if __name__ == "__main__":
     main()

@@ -22,7 +22,6 @@ from main import lookup_patient, LookupRequest  # noqa: E402
 
 CORRECT_DOB = "1985-06-15"
 
-
 def _build_test_db(path, n_prescriptions=2):
     conn = sqlite3.connect(path)
     with open(os.path.join(DATA_DIR, "schema.sql")) as f:
@@ -47,14 +46,12 @@ def _build_test_db(path, n_prescriptions=2):
     conn.close()
     return patient_id
 
-
 @pytest.fixture
 def patient(tmp_path, monkeypatch):
     db_path = tmp_path / "lookup.db"
     patient_id = _build_test_db(str(db_path), n_prescriptions=2)
     monkeypatch.setattr(main_module, "DB_PATH", str(db_path))
     return patient_id
-
 
 @pytest.fixture
 def first_rx_patient(tmp_path, monkeypatch):
@@ -63,13 +60,11 @@ def first_rx_patient(tmp_path, monkeypatch):
     monkeypatch.setattr(main_module, "DB_PATH", str(db_path))
     return patient_id
 
-
 def test_correct_id_and_correct_dob_succeeds(patient):
     result = lookup_patient(LookupRequest(patient_id=patient, date_of_birth=CORRECT_DOB))
     assert result["patient"]["patient_id"] == patient
     assert result["patient"]["first_name"] == "Jane"
     assert result["patient"]["last_name"] == "Doe"
-
 
 def test_correct_id_wrong_dob_returns_404(patient):
     with pytest.raises(HTTPException) as exc_info:
@@ -77,13 +72,11 @@ def test_correct_id_wrong_dob_returns_404(patient):
     assert exc_info.value.status_code == 404
     assert exc_info.value.detail == "No matching patient record found."
 
-
 def test_wrong_id_correct_dob_returns_404(patient):
     with pytest.raises(HTTPException) as exc_info:
         lookup_patient(LookupRequest(patient_id="nonexistent-id", date_of_birth=CORRECT_DOB))
     assert exc_info.value.status_code == 404
     assert exc_info.value.detail == "No matching patient record found."
-
 
 def test_first_prescription_workflow_still_works_with_two_factor_lookup(first_rx_patient):
     """First-prescription status logic should still work once two-factor
