@@ -12,6 +12,12 @@ For the algorithm-suitability reasoning behind the current risk architecture,
 see `Algorithm audits/ALGORITHM_AUDIT.md`, `Algorithm audits/ALGORITHM_AUDIT_2.md`,
 and `Algorithm audits/ALGORITHM_AUDIT_3.md`.
 
+## GitHub Repository
+
+Project source code and development history are available at:
+
+`https://github.com/Rishivardhan0810/final-project`
+
 ## What's here vs. what the plan specifies
 
 This sandbox environment has a restricted network allowlist (npm/pip
