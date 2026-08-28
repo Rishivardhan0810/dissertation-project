@@ -2,7 +2,7 @@
 
 Every file and folder in this repository, what part of the project it belongs to, and what it's actually used for. Files marked **(generated)** are never hand-written — a script produces them, and they can be safely deleted and rebuilt at any time.
 
-**This file describes the CURRENT implementation.** For a critical review of how well the current implementation satisfies supervisor feedback, see `FINAL_AUDIT.md`. For the algorithm-suitability reasoning behind the risk architecture described below, see `ALGORITHM_AUDIT.md` / `_2` / `_3`.
+**This file describes the CURRENT implementation.** For a critical review of how well the current implementation satisfies supervisor feedback, see `FINAL_AUDIT.md`. For the algorithm-suitability reasoning behind the risk architecture described below, see `Algorithm audits/ALGORITHM_AUDIT.md`, `Algorithm audits/ALGORITHM_AUDIT_2.md`, and `Algorithm audits/ALGORITHM_AUDIT_3.md`.
 
 ## How the three main parts fit together
 
@@ -35,7 +35,7 @@ Every file and folder in this repository, what part of the project it belongs to
 | `evaluation_summary.json` **(generated)** | The metrics from the last time `evaluate.py` was run. |
 | `baseline_comparison_results.json`, `.csv` **(generated)** | The metrics from the last time `baseline_comparison.py` was run. |
 
-### `backend/tests/` — 56 tests total, run with `pytest backend/tests -v`
+### `backend/tests/` — 70 tests total, run with `pytest backend/tests -v`
 
 | File | Covers |
 |---|---|
@@ -52,7 +52,7 @@ Every file and folder in this repository, what part of the project it belongs to
 
 | File | Used for |
 |---|---|
-| `generate_synthetic_data.py` | **Step 1.** Generates 600 synthetic patients, each paired with one previous/current prescription-change record (17 drugs, therapeutic classes, NTI flags, formulations, manufacturers). Uses the shared `classify_risk()` from `backend/comparison_engine.py` to generate risk labels — not a separate copy of that logic. Writes `patients.csv` and `medications.csv`. This is the substitute for real Synthea output the project plan originally called for. |
+| `generate_synthetic_data.py` | **Step 1.** Generates 600 synthetic patients, each paired with one previous/current prescription-change record (18 drugs, therapeutic classes, NTI flags, formulations, manufacturers). Uses the shared `classify_risk()` from `backend/comparison_engine.py` to generate risk labels — not a separate copy of that logic. Writes `patients.csv` and `medications.csv`. This is the substitute for real Synthea output the project plan originally called for. |
 | `generate_demo_patient.py` | **Optional step.** Writes exactly one fixed, non-randomised demo patient (`demo0001`, "Arjun Mehta") with exactly one prescription and no previous prescription to compare against, to `demo_patient.csv` — used only to demonstrate the first-prescription review workflow in the running UI/database. Cannot enter the paired ML dataset by construction (that dataset is shaped as previous-vs-current pairs; this patient has no previous prescription). |
 | `eda.py` | **Step 2.** Exploratory Data Analysis — checks the generated data is balanced, checks which features actually carry signal, before any model is trained on it. Writes results into `eda_outputs/`. |
 | `preprocess.py` | **Step 3.** Cleans the data, selects features, and splits everything into a fixed `train.csv`/`test.csv` so every model is trained and tested on the exact same patients. |
@@ -117,7 +117,7 @@ Kept intentionally as a documented future-upgrade path (a real ClinicalBERT fine
 | `README.md` | The main project overview — setup instructions, core workflow, risk architecture, current algorithm-comparison results, data provenance, dashboards, database, testing, and technology stack. |
 | `PROJECT_STRUCTURE.md` | This file. |
 | `DATABASE_REPORT.md` | A writeup of the dispense-logging feature and database design, from an earlier session — still describes the current `acknowledgements`/`dispenses` schema accurately; does not cover the audit-dashboard endpoints or the login gate added afterward. |
-| `ALGORITHM_AUDIT.md`, `ALGORITHM_AUDIT_2.md`, `ALGORITHM_AUDIT_3.md` | Three sequential, read-only technical audits of the risk-classification algorithm — culminating in the label-circularity finding and the recommendation (now implemented) to make the deterministic rule the live primary decision, with Random Forest and the text model as secondary comparison signals. |
+| `Algorithm audits/ALGORITHM_AUDIT.md`, `Algorithm audits/ALGORITHM_AUDIT_2.md`, `Algorithm audits/ALGORITHM_AUDIT_3.md` | Three sequential, read-only technical audits of the risk-classification algorithm — culminating in the label-circularity finding and the recommendation (now implemented) to make the deterministic rule the live primary decision, with Random Forest and the text model as secondary comparison signals. |
 | `FINAL_AUDIT.md` | A final, read-only technical and supervisor-feedback audit checking the current implementation against every point of supervisor feedback, with exact code evidence, an algorithm/technology justification, an evaluation-gap analysis (measured vs. demonstrated vs. inferred vs. not proven), a security/PSEL review, and viva-preparation material. |
 | `rx-alert-system.code-workspace` | A VS Code workspace file — opening this instead of the plain folder gives you the recommended extensions and pre-configured run tasks. |
 | `.gitignore` | Tells git which files to never track — all the **(generated)** files/folders listed above, plus `node_modules/`, `__pycache__/`, `.pytest_cache/`, and similar disposable output. |
