@@ -101,6 +101,11 @@ def test_audit_activity_returns_newest_events_first(audit_db):
     assert result["events"][0]["happened_at"].startswith("2026-02-04")  # the last dispense
 
 def test_audit_activity_returns_patient_id_not_name(audit_db):
+    """Covers the /api/audit/activity endpoint specifically -- the one that
+    actually powers the frontend dashboard. This is deliberately NOT the
+    same thing as schema.sql's `activity_log` SQL view, which intentionally
+    shows patient_name for a different, legitimate purpose (identified
+    per-patient database browsing)."""
     result = audit_activity(limit=50)
     assert len(result["events"]) > 0
     for event in result["events"]:
