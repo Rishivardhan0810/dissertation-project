@@ -9,7 +9,8 @@ Logistic Regression text model), and a two-screen React alert/audit UI.
 a critical, evidence-based review of how well this implementation satisfies
 supervisor feedback (including exact code references), see `FINAL_AUDIT.md`.
 For the algorithm-suitability reasoning behind the current risk architecture,
-see `ALGORITHM_AUDIT.md` / `_2` / `_3`.
+see `Algorithm audits/ALGORITHM_AUDIT.md`, `Algorithm audits/ALGORITHM_AUDIT_2.md`,
+and `Algorithm audits/ALGORITHM_AUDIT_3.md`.
 
 ## What's here vs. what the plan specifies
 
@@ -71,7 +72,7 @@ to the rest of the system through the same CSV/JSON contracts.
   as code, so there is nothing to learn that isn't already specified exactly.
   Using an ML approximation of a fully-known function as the live safety-critical
   decision would add approximation risk with no offsetting benefit — see
-  `ALGORITHM_AUDIT_3.md` for the full reasoning and the exact trace showing why
+  `Algorithm audits/ALGORITHM_AUDIT_3.md` for the full reasoning and the exact trace showing why
   Random Forest's near-perfect accuracy is expected, not evidence of "learning."
 - **The deterministic rule is a transparent reference framework, not a clinically
   validated instrument.** No result in this project — 100%, or otherwise — should
@@ -120,7 +121,7 @@ influenced by label circularity, not by any model "learning" clinical judgement.
 (`drug_changed`, `formulation_changed`, `dose_changed`, `dose_change_pct`,
 `route_changed`, `narrow_therapeutic_index`), and Random Forest's/the Decision
 Tree's input features are exactly those same six variables — a one-to-one
-match, traced exactly in `ALGORITHM_AUDIT_3.md`. Near-perfect accuracy is the
+match, traced exactly in `Algorithm audits/ALGORITHM_AUDIT_3.md`. Near-perfect accuracy is the
 *expected* result of that overlap, not evidence of discovered pattern. Logistic
 Regression's measurably lower score (96%, 95.56% CV) is the informative baseline
 here: it shows the rule genuinely needs hard branching logic that a linear model
@@ -128,7 +129,7 @@ can't represent without manual interaction terms — real, measured evidence tha
 tree-based methods structurally fit this problem, rather than an assumption.
 
 **The text model's real-Synthea accuracy (30%) is a domain-shift result, not
-a failure of the technique**: it is trained on a fixed 17-drug synthetic
+a failure of the technique**: it is trained on a fixed 18-drug synthetic
 vocabulary with pure bag-of-words (TF-IDF) features and no subword/semantic
 generalisation, so real drug names outside that vocabulary are functionally
 invisible to it. This is an honest, explainable limitation worth keeping in
@@ -141,7 +142,7 @@ rule-recovery on synthetic held-out data, and external *data* validation
 (genuine drug/dose/route facts the models never trained on, real-Synthea).
 Neither is independent clinician-adjudicated validation, because every label
 in both datasets is produced by this project's own rule, not by a clinician's
-judgement. See `ALGORITHM_AUDIT_3.md` §12 for the exact terminology this
+judgement. See `Algorithm audits/ALGORITHM_AUDIT_3.md` §12 for the exact terminology this
 project uses to keep that distinction explicit.
 
 ## Data
@@ -230,7 +231,7 @@ directly via Python's `sqlite3` module.
 python -m pytest backend/tests -v
 ```
 
-**56 tests currently pass**, across six files:
+**70 tests currently pass**, across six files:
 
 | File | Covers |
 |---|---|
@@ -257,7 +258,7 @@ checked via `build`/`lint` plus manual verification, not automated component tes
 - **React + Vite** — frontend (`frontend/`)
 - **SQLite** — database (`data/pharmacy.db`)
 - **scikit-learn** — Random Forest, Logistic Regression, Decision Tree, TF-IDF
-- **pytest** — backend test suite (56 tests)
+- **pytest** — backend test suite (70 tests)
 
 ## Project layout
 
@@ -288,7 +289,7 @@ backend/
   tests/
     test_pipeline.py, test_first_prescription.py, test_demo_fixture.py,
     test_rule_primary_risk.py, test_lookup_two_factor.py, test_audit_dashboard.py
-    (56 tests total — see "Testing" above)
+    (70 tests total — see "Testing" above)
 frontend/
   src/App.jsx                  app shell — switches between Prescription Review and Audit & Safety, holds auth state
   src/LookupScreen.jsx         Patient ID + date-of-birth lookup form
@@ -338,7 +339,7 @@ python3 load_to_db.py                # builds pharmacy.db (601 patients if the d
 cd ../backend/risk_models
 python3 evaluate.py                  # trains both models on train.csv, scores on test.csv
 cd ../..
-python3 -m pytest backend/tests -v   # 56 tests: correctness, data integrity, rule-primacy, workflows, dashboards
+python3 -m pytest backend/tests -v   # 70 tests: correctness, data integrity, rule-primacy, workflows, dashboards
 ```
 
 **3. Start the API**
@@ -372,7 +373,7 @@ Your supervisor's checklist maps onto these steps directly:
 | Load DB | `data/load_to_db.py` | Loads the full (pre-split) data, plus the demo fixture if present, into SQLite for the running app to query. |
 | Train + evaluate | `backend/risk_models/evaluate.py` | Trains both models on `train.csv`, scores on `test.csv`, uses `class_weight="balanced"` on both, prints per-class precision/recall/F1 and a confusion matrix. |
 | Baseline comparison (experimental) | `backend/risk_models/baseline_comparison.py` | Adds Logistic Regression and a single Decision Tree to the comparison, plus 5-fold CV — see "Algorithm comparison results" above. Loads the existing Random Forest/text models rather than retraining them. |
-| Test | `backend/tests/` | 56 pytest tests — see "Testing" above. |
+| Test | `backend/tests/` | 70 pytest tests — see "Testing" above. |
 
 Run the whole thing with the VS Code task **"Full pipeline: data → EDA → preprocess → DB → train → evaluate → test"**, or manually in that order.
 
