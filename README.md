@@ -310,7 +310,7 @@ frontend/
 
 1. Open the folder (or double-click `rx-alert-system.code-workspace` to open as a workspace).
 2. Install the recommended extensions when prompted (Python, ESLint, Prettier, SQLite viewer, REST Client).
-3. Run **Terminal → Run Task → "Setup: create Python venv + install backend deps"**, then **"Setup: install frontend deps"**.
+3. Run **Terminal → Run Task → "Setup: install backend deps"**, then **"Setup: install frontend deps"**.
 4. Run **Terminal → Run Task → "Full pipeline: data → EDA → preprocess → DB → train → evaluate → test"** — generates data, runs EDA, preprocesses, loads the DB, trains both models, prints the comparison table, and runs the test suite.
 5. Run **Terminal → Run Task → "Run everything (backend + frontend)"**, or use the **Run and Debug** panel (`F5`) with **"Run full stack (backend + frontend debug)"** to launch both with breakpoints available in the FastAPI code.
 6. Open `http://localhost:5173`.
@@ -324,8 +324,8 @@ frontend/
   Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
   ```
   Type `Y` when prompted, then re-run the task.
-- **Python interpreter**: after "Setup: create Python venv + install backend deps" finishes, VS Code may prompt *"We noticed a new virtual environment"* — click **Yes** to select it. If it doesn't prompt, use `Ctrl+Shift+P` → **"Python: Select Interpreter"** → choose the one inside `.venv`.
-- The tasks already account for Windows using `python` (not `python3`) and `.venv\Scripts\` (not `.venv/bin/`) — you shouldn't need to edit `tasks.json` yourself.
+- **Python interpreter**: "Setup: install backend deps" installs packages into the currently selected Python interpreter; it does not create a virtual environment. Use `Ctrl+Shift+P` → **"Python: Select Interpreter"** if you need to choose a different interpreter.
+- The tasks already account for Windows by using `python` (not `python3`) for the backend dependency installation — you shouldn't need to edit `tasks.json` yourself.
 
 ## Running it manually (no VS Code)
 
